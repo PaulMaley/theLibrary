@@ -92,12 +92,13 @@ reqListener = (req,res) => {
   console.log(path);
 
   // For holding session data (and other stuff ?)
-  data = {};
+  data = {'url':mURL};
 
   // Get session status - first visit no valid cookie
   if (! hasSession(req)) {
     // Create a session and redirect to login page
-    data['sessionId'] = newSession();
+    // Only the login page creates new sessions !!
+    //data['sessionId'] = newSession();
     path = 'login';
   } else {
     // Has session
@@ -106,6 +107,8 @@ reqListener = (req,res) => {
     // What is the logic/achitecture for using them?
   }
 
+  // OK, read the doc !! Bit of cleaning to do here !!
+
   // Now I need to shove stuff into an event queue ?
   req.on("data", function() {/*Do nothing*/});
 
@@ -113,12 +116,12 @@ reqListener = (req,res) => {
   req.on("end", function() {
     // Route the request
     if (path in routes) {
-      routes[path](data,res);
-    } else if (/^site/.test(path)) {
-      // This is a direct access to a file 
-      routes['site'](path,data,res);
+      routes[path](data, res);
+//    } else if (/^site/.test(path)) {
+//      // This is a direct access to a file 
+//      routes['site'](path,data,res);
     } else {
-      routes['unknown'](data,res);
+      routes['unknown'](data, res);
     }
   });
 }
@@ -135,7 +138,7 @@ process.on('SIGTERM', die);
 // Dictionary of route functions 
 // What is <data> ?
 const routes = {
-  root: function(data, res) {
+  home: function(data, res) {
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/plain');
     res.end('Root ...  man!\n');  
@@ -147,11 +150,45 @@ const routes = {
   },
   login: function(data, res) {
     // data contains a (new) sessionId - add to the header
+
+    // Check login credentials ... create new session
+    data['sessionId'] = newSession();
     res.setHeader('Set-Cookie', `LibSessionId=${data.sessionId}`);
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/plain');
     res.end('Enter your id and password man!\n');  
   },
+  bookshelves: function(data, res) {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/html');
+    let pageData = fs.readFileSync('./site/catalog.html');
+    res.end(pageData);
+  },
+  // Request for resource ... required resource is in search params
+  resource: function(data, res) {
+    console.log("Resource request")
+    // Read the file synchronously ... it's very small !!
+    // OK this is no longer true for the images !!!!!! TO FIX
+    // Shelves are only resource for the moment ... to rethink
+    // Apart from the catalog page  FUCKWIT. 
+    shelfNo = data.url.searchParams.get('shelf');
+    console.log(`Shelf no ${shelfNo} requested`);
+    try {
+      //const page = fs.readFileSync('./'+path, 'utf8');
+      res.statusCode = 200;
+      // image
+      console.log("Image requested");
+      let imData = fs.readFileSync('./site/shelves/shelf'+shelfNo+'.jpeg');
+      res.setHeader('Content-Type', 'jpeg');
+      res.end(imData);
+    } catch (err) {
+      console.error(err);
+      res.statusCode = 404;
+      res.setHeader('Content-Type', 'text/plain');
+      res.end('Page not found dude! An unholy mess.\n');  
+    }
+  },
+/*
   site: function(path,data, res) {
     // Read the file synchronously ... it's very small !!
     // OK this is no longer true for the images !!!!!! TO FIX
@@ -176,6 +213,7 @@ const routes = {
       res.end('Page not found dude! An unholy mess.\n');  
     }
   },
+  */
   unknown: function(data, res) {
     res.statusCode = 404;
     res.setHeader('Content-Type', 'text/plain');
