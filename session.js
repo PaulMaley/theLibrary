@@ -18,8 +18,8 @@ module.exports = {
     //return s in this.validSessions;
     return this.validSessions.find(e => e.session == s);
   },
-  removeSession : function(s){
-    this.validSessions.filter(e => e.session != s);
+  invalidateSession : function(s){
+    this.validSessions = this.validSessions.filter(e => e.session != s);
   },
   hasSession: (req) => {
     let hs = false;

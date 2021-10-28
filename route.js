@@ -32,6 +32,12 @@ exports.routes = {
       this.bookshelves({},res);
     }
   },
+  request: function(data, res) {
+   // Need access to the session data !!
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/plain');
+    res.end('Request sent to librarian -- you wish!!\n');  
+  },
   bookshelves: function(data, res) {
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/html');

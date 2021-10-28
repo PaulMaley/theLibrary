@@ -42,8 +42,9 @@ reqListener = (req,res) => {
  
   // Check request for valid session 
   let validSession = false;
+  let sessionId = undefined;
   if (session.hasSession(req)) { 
-    const sessionId = session.getSessionId(req);
+    sessionId = session.getSessionId(req);
     console.log(sessionId);
     validSession = session.isValidSession(sessionId);
   }
@@ -63,7 +64,17 @@ reqListener = (req,res) => {
   if (validSession) {
     // Valid session - execute request
     req.on('end', () => {
-      if (path in routes.routes) {
+      if (path === 'logout') {
+        // End the session
+        session.invalidateSession(sessionId);
+        routes.routes['login']({loginData : undefined},res);
+      } else if (path in routes.routes) {
+        // HORRIBLE !!!! Refactor again
+        let request = undefined;
+        if (method === 'POST') {
+          const {request} = querystring.parse(body);
+          console.log(`Book request: ${request}`);
+        }
         routes.routes[path]({url: mURL},res);
       } else {  
         routes.routes['unknown']({},res);
