@@ -41,9 +41,14 @@ reqListener = (req,res) => {
   req.on('data', (chunk) => {body.push(chunk);}); 
  
   // Check request for valid session 
-  const sessionFlag = session.session.hasSession(req);  
-
-
+  let validSession = false;
+  if (session.hasSession(req)) { 
+    const sessionId = session.getSessionId(req);
+    console.log(sessionId);
+    validSession = session.isValidSession(sessionId);
+  }
+  // List valid sessions
+  console.log(session.validSessions);
 
   // BUGS TO FIX 
   // 1) if you go to the login page with a session already
@@ -55,7 +60,7 @@ reqListener = (req,res) => {
 
 
   // Dispatch
-  if (sessionFlag) {
+  if (validSession) {
     // Valid session - execute request
     req.on('end', () => {
       if (path in routes.routes) {
@@ -77,7 +82,7 @@ reqListener = (req,res) => {
       console.log(password);
       if (dbase.db.authenticate(userid,password)) {
         // make a new session and add to response
-        const s = session.session.newSession();
+        const s = session.newSession(userid);
         res.setHeader('Set-Cookie','LibSessionId='+s);  
         routes.routes['bookshelves']({},res);
       } else { 

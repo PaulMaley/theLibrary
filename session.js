@@ -1,19 +1,25 @@
 /*
  * Manage login sessions
  *   Session objects are just ints ... to modify
+ *   TODO: newSession should check that the user doesn't 
+ *   already have a valid session. Is this possible?
+ *   Either switch to use existing session or make sure
+ *   it's not possible.
  */
 
-exports.session = {
+module.exports = {
   validSessions : [],
   sessionCounter : 0,
-  newSession : function(){this.sessionCounter += 1;
-                         this.validSessions.push(this.sessionCounter);
+  newSession : function(userid){this.sessionCounter += 1;
+                         this.validSessions.push(
+                            {user: userid, session: this.sessionCounter});
                          return this.sessionCounter;},
   isValidSession : function(s){
-    return s in this.validSessions;
+    //return s in this.validSessions;
+    return this.validSessions.find(e => e.session == s);
   },
   removeSession : function(s){
-    this.validSessions.filter(e => e != s);
+    this.validSessions.filter(e => e.session != s);
   },
   hasSession: (req) => {
     let hs = false;
@@ -35,6 +41,13 @@ exports.session = {
       }
     }  
     return hs;
+  },
+  getSessionId: (req) => {
+    // Look for "LibSessionId=ddd"
+    const reg = /LibSessionId=([0-9]+)/;
+    const m = req.headers.cookie.match(reg);
+    console.log(`session id : ${m[1]}`);
+    return m[1];
   }
 };
 
