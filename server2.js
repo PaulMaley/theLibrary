@@ -6,7 +6,9 @@
 const http = require('http');
 const process = require('process');
 const routes = require('./route.js');
-const session = require("./session.js");
+const session = require('./session.js');
+const dbase = require('./dbase.js')
+const querystring = require('querystring');
 //const fs = require('fs');
 
 const hostname = '127.0.0.1'; 
@@ -61,7 +63,7 @@ reqListener = (req,res) => {
       } else {  
         routes.routes['unknown']({},res);
       }});
-    } else {
+  } else {
     // No valid session - execute login
     req.on('end', () => {
       body = Buffer.concat(body).toString();
@@ -69,8 +71,11 @@ reqListener = (req,res) => {
       if (method === 'GET' && url === '/login') {
         routes.routes['login']({loginData : undefined},res);
       } else if (method === 'POST' && url === '/login') {
-      // Verify login - Just accept for the mo
-      if (true) {
+      // Verify login
+      const {userid, password} = querystring.parse(body);
+      console.log(userid);
+      console.log(password);
+      if (dbase.db.authenticate(userid,password)) {
         // make a new session and add to response
         const s = session.session.newSession();
         res.setHeader('Set-Cookie','LibSessionId='+s);  
@@ -94,3 +99,10 @@ reqListener = (req,res) => {
 const server = http.createServer(reqListener);
 server.listen(port, hostname,
   () => {console.log(`Svr starting: http://${hostname}:${port}`)});
+
+/*
+ * Load the database
+ */
+
+dbase.db.loadDB();
+
