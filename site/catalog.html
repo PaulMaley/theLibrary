@@ -3,8 +3,39 @@
   <head>
     <meta charset="UTF-8">
     <title>Catalog</title>
+    <style>
+    .flex-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+			align-items: center;
+		}
+		.megawide {
+		  font-size: 200%;
+		}
+		fieldset {
+			border-style: none;
+		}
+    body {font-size: 150%;}
+ 		form {font-size: 100%;}
+		input {font-size: 100%;}
+		button {font-size: 250%;}
+    .center {
+      margin: 0;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      -ms-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+    }
+    </style>
   </head>
   <body>
+    <div class="flex-container">
+    <div class="megawide"> The Library at the End of the Universe</div> 
+    </div>
+    <br>
+    <h2>The bookshelves</h2>
     <p>The catalog is currently in analog form; 
        feel free to browse the shelves.</p>
     <ul>
@@ -13,8 +44,21 @@
     </ul> 
     <p> Make a request ... </p>
     <form action="./request" method="POST">
-      Enter title : <input type="text" name="request" size="40">
-      <input type="submit">
+      Title : <input type="text" id="request" name="request" size="40">
+      <br>
+      <input type="submit" value="Submit loan request">
     </form>  
+    <form action="./logout">
+      <input type="submit" value="Logout">
+    </form>  
+    <br>
+    <h2>Library Rules</h2>
+    <ul>
+      <li>All loans are made at the discretion of the librarian.</li>
+      <li>The loanee ie responsible for all damage to loaned books 
+        (chewed by the dog, puked on by the baby, etc.).</li>
+        <li>Damaged books are to be replaced graciously.</li>
+      <li>The librarian shall be accorded the status of demigod. </li>
+    </ul> 
   </body>
 </html>

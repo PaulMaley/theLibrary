@@ -68,10 +68,15 @@ reqListener = (req,res) => {
         // End the session
         session.invalidateSession(sessionId);
         routes.routes['login']({loginData : undefined},res);
+//      } else if (path === 'login') {
+//        // Mega hack .... no?
+//        routes.routes['bookshelves']({},res);
       } else if (path in routes.routes) {
         // HORRIBLE !!!! Refactor again
         let request = undefined;
+        console.log(body);
         if (method === 'POST') {
+          body = Buffer.concat(body).toString();
           const {request} = querystring.parse(body);
           console.log(`Book request: ${request}`);
         }
@@ -81,10 +86,13 @@ reqListener = (req,res) => {
       }});
   } else {
     // No valid session - execute login
+    // Some requests (images) do not require a valid session !
     req.on('end', () => {
       body = Buffer.concat(body).toString();
       console.log(body);
-      if (method === 'GET' && url === '/login') {
+      if (method === 'GET' && path === 'image') {
+        routes.routes['image']({url: mURL},res);
+      } else if (method === 'GET' && url === '/login') {
         routes.routes['login']({loginData : undefined},res);
       } else if (method === 'POST' && url === '/login') {
       // Verify login

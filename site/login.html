@@ -7,18 +7,42 @@
 		#mylink{
 			font-size: 25px;
 		}
+    .flex-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+			align-items: center;
+		}
+		.mega {
+			width: 600px;
+		  font-size: 400%; 
+		}
+		fieldset {
+			border-style: none;
+		}
+		form {font-size: 150%;}
+		input {font-size: 100%;}
+		button {font-size: 100%;}
+    .center {
+      margin: 0;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      -ms-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+    }
 	</style>
 </head>
 <body align='center'>
-  <header>
-		<h1>Login</h1>
-	</header>
-
+	<div class="center">
+	<div class="flex-container">
+		<div> 
+			<div class="mega"> The Library at the End<br> of the Universe</div> 
 	<form action="/login" method="POST">
 		<fieldset>			
-			<label>Login ID</label>
-			<input type ="text" id = "userid" name="userid" placeholder="username" required>
-			<br><br>
+			<label>User ID</label>
+			<input type ="text" id = "userid" name="userid" required>
+			<br>
 
 			<label>Password</label>
 			<input type="password" id = "password" name="password" required>
@@ -28,5 +52,9 @@
 			<button type ="submit">Submit</button>
 		</fieldset>
   </form>
+		</div>
+		<div> <img src="./image?image=pile-of-books.jpg"> </div>
+	</div>
+  </div>
 </body>
 </html>

@@ -68,6 +68,30 @@ exports.routes = {
       res.end('Page not found dude! An unholy mess.\n');  
     }
   },
+  image: function(data, res) {
+    console.log("Image request")
+    console.log("Why am I here?")
+    // Read the file synchronously ... it's very small !!
+    // OK this is no longer true for the images !!!!!! TO FIX
+    // Shelves are only resource for the moment ... to rethink
+    // Apart from the catalog page  FUCKWIT. 
+    img = data.url.searchParams.get('image');
+    console.log(`Image ${img} requested`);
+    try {
+      //const page = fs.readFileSync('./'+path, 'utf8');
+      res.statusCode = 200;
+      // image ATTN: Type 
+      console.log("Image requested");
+      let imData = fs.readFileSync('./site/shelves/' + img);
+      res.setHeader('Content-Type', 'jpeg');
+      res.end(imData);
+    } catch (err) {
+      console.error(err);
+      res.statusCode = 404;
+      res.setHeader('Content-Type', 'text/plain');
+      res.end('Page not found dude! An unholy mess.\n');  
+    }
+  },
   unknown: function(data, res) {
     res.statusCode = 404;
     res.setHeader('Content-Type', 'text/plain');
